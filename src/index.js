@@ -26,11 +26,29 @@ function displayCurrentGame(game){
     gameHighScoreElement.textContent = localStorage.getItem(`${currentGame.id}_high_score`)
 }
 
+function patchHighScore(newScoreInput){
+    const data = {"high_score" : newScoreInput}
+    fetch (`http://localhost:3000/games/${currentGame.id}`,{
+        "method" : "PATCH",
+        "headers" : {
+            "Content-Type" : "application/json"
+        },
+        "body" : JSON.stringify(data)
+    })
+}
+
 scoreInputFormElement.addEventListener('submit', (event) => {
     event.preventDefault()
     newScoreInput = document.getElementById('score-input').value
-    localStorage.setItem(`${currentGame.id}_high_score`, newScoreInput)
-    displayCurrentGame(currentGame)
+
+    if (Number(newScoreInput) > Number(gameHighScoreElement.textContent)){
+        localStorage.setItem(`${currentGame.id}_high_score`, newScoreInput)
+        displayCurrentGame(currentGame)
+        patchHighScore(newScoreInput)
+
+    } else { 
+        window.alert("Hold Up! - That's not a new high score. Let's not update that.");
+    }
 })
 
 
